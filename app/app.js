@@ -4,9 +4,10 @@ var express = require('express')
   , LocalStrategy = require('passport-local').Strategy;
   
 
+
 var users = [
-    { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com' : role 'admin' }
-  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' : role 'user' }
+    { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com' , role : 'admin' }
+  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' , role : 'user' }
 ];
 
 function findById(id, fn) {
@@ -76,7 +77,7 @@ var app = express();
 
 // configure Express
 app.configure(function() {
-  app.set('views', __dirname + '/views');
+  app.set('views', __dirname + '/client/views');
   app.set('view engine', 'ejs');
   app.engine('ejs', require('ejs-locals'));
   app.use(express.logger());
@@ -90,7 +91,7 @@ app.configure(function() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/client'));
 });
 
 
@@ -119,34 +120,13 @@ app.post('/login',
     res.redirect('/');
   });
   
-// POST /login
-//   This is an alternative implementation that uses a custom callback to
-//   acheive the same functionality.
-/*
-app.post('/login', function(req, res, next) {
-  passport.authenticate('local', function(err, user, info) {
-    if (err) { return next(err) }
-    if (!user) {
-      req.flash('error', info.message);
-      return res.redirect('/login')
-    }
-    req.logIn(user, function(err) {
-      if (err) { return next(err); }
-      return res.redirect('/users/' + user.username);
-    });
-  })(req, res, next);
-});
-*/
-
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
 });
 
 // Route Extensions 
-require('./routes')(app);
-
-
+require('./server/routes')(app);
 
 app.listen(3000, function() {
   console.log('Express server listening on port 3000');
